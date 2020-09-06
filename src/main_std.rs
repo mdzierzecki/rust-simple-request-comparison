@@ -3,6 +3,7 @@ extern crate log;
 use std::time::{Instant};
 use log::*;
 use simple_logger::SimpleLogger;
+use futures::join;
 
 fn slowwly(delay_ms: u32) -> reqwest::Url {
     let url = format!(
@@ -22,9 +23,15 @@ async fn app() -> Result<(), ()> {
     info!("Starting program!");
     let result_a = request(1);
     let result_b = request(2);
+    let result_c = request(3);
+    let result_d = request(4);
+    let result_e = request(5);
 
     let _result_a_unwrapped = result_a.await;
     let _result_b_unwrapped = result_b.await;
+    let _result_c_unwrapped = result_c.await;
+    let _result_d_unwrapped = result_d.await;
+    let _result_e_unwrapped = result_e.await;
 
     Ok(())
 }
@@ -34,11 +41,7 @@ async fn main() {
     let start = Instant::now();
     let _logger_init = SimpleLogger::new().with_module_level("something", LevelFilter::Warn).init();
 
-    let result = app().await;
-    match result {
-        Ok(_) => info!("Done"),
-        Err(_) => error!("An error ocurred"),
-    }
+    let _result = join!(app());
 
     let duration = start.elapsed();
     println!("Time elapsed in expensive_function() is: {:?}", duration);
