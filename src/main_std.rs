@@ -1,13 +1,8 @@
-#[macro_use]
 extern crate log;
-extern crate simple_logger;
 
-use std::time::{Duration, Instant};
-use futures::prelude::*;
-use tokio::prelude::*;
-use tokio::task;
+use std::time::{Instant};
 use log::*;
-
+use simple_logger::SimpleLogger;
 
 fn slowwly(delay_ms: u32) -> reqwest::Url {
     let url = format!(
@@ -18,24 +13,26 @@ fn slowwly(delay_ms: u32) -> reqwest::Url {
 }
 
 async fn request(n: usize) -> Result<(), ()> {
-    reqwest::get(slowwly(1000)).await;
+    let _request_result = reqwest::get(slowwly(1000)).await;
     info!("Got response from {}", n);
     Ok(())
 }
+
 async fn app() -> Result<(), ()> {
     info!("Starting program!");
-    let a = request(1);
-    let b = request(2);
+    let result_a = request(1);
+    let result_b = request(2);
 
-    a.await;
-    b.await;
+    let _result_a_unwrapped = result_a.await;
+    let _result_b_unwrapped = result_b.await;
+
     Ok(())
 }
 
 #[tokio::main]
 async fn main() {
     let start = Instant::now();
-    simple_logger::init_with_level(log::Level::Debug).unwrap();
+    let _logger_init = SimpleLogger::new().with_module_level("something", LevelFilter::Warn).init();
 
     let result = app().await;
     match result {

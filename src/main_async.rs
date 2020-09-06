@@ -1,13 +1,10 @@
-#[macro_use]
 extern crate log;
 extern crate simple_logger;
 
-use std::time::{Duration, Instant};
-use futures::prelude::*;
-use tokio::prelude::*;
+use std::time::{Instant};
 use tokio::task;
+use simple_logger::SimpleLogger;
 use log::*;
-
 
 fn slowwly(delay_ms: u32) -> reqwest::Url {
     let url = format!(
@@ -18,26 +15,26 @@ fn slowwly(delay_ms: u32) -> reqwest::Url {
 }
 
 async fn request(n: usize) -> Result<(), ()> {
-    reqwest::get(slowwly(1000)).await;
+    let _request = reqwest::get(slowwly(1000)).await;
     info!("Got response from {}", n);
     Ok(())
 }
 
 async fn app() -> Result<(), ()> {
     info!("Starting program!");
-    let a = task::spawn(request(1));
-    let b = task::spawn(request(2));
+    let task_a = task::spawn(request(1));
+    let task_b = task::spawn(request(2));
 
-    a.await;
-    b.await;
+    let _task_a_unwrapped = task_a.await;
+    let _task_b_unwrapped = task_b.await;
     Ok(())
 }
 
 #[tokio::main]
 async fn main() {
     let start = Instant::now();
-    simple_logger::init_with_level(log::Level::Debug).unwrap();
-    app().await;
+    let _logger_init = SimpleLogger::new().with_module_level("something", LevelFilter::Warn).init();
+    let _task = app().await;
 
     let duration = start.elapsed();
     println!("Time elapsed in expensive_function() is: {:?}", duration);
