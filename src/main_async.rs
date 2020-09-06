@@ -34,14 +34,12 @@ async fn app() -> Result<(), ()> {
 }
 
 #[tokio::main]
-fn main() {
+async fn main() {
     let start = Instant::now();
     simple_logger::init_with_level(log::Level::Debug).unwrap();
-    app.await;
+    app().await;
 
     let duration = start.elapsed();
     println!("Time elapsed in expensive_function() is: {:?}", duration);
 
 }
-
-

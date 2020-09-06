@@ -37,8 +37,8 @@ async fn main() {
     let start = Instant::now();
     simple_logger::init_with_level(log::Level::Debug).unwrap();
 
-    let a = app().await;
-    match a {
+    let result = app().await;
+    match result {
         Ok(_) => info!("Done"),
         Err(_) => error!("An error ocurred"),
     }
