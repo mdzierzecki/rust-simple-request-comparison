@@ -30,7 +30,7 @@ async fn app() -> Result<(), ()> {
     Ok(())
 }
 
-#[tokio::main]
+#[tokio::main(core_threads = 1)]
 async fn main() {
     let start = Instant::now();
     let _logger_init = SimpleLogger::new().with_module_level("something", LevelFilter::Warn).init();
