@@ -13,26 +13,46 @@ fn slowwly(delay_ms: u32) -> reqwest::Url {
     reqwest::Url::parse(&url).unwrap()
 }
 
-async fn request(n: usize) -> Result<(), ()> {
-    let _request_result = reqwest::get(slowwly(1000)).await;
-    info!("Got response from {}", n);
-    Ok(())
+fn analyze(txt: &str) -> (u64, u64) {
+    let txt = txt.as_bytes();
+    // Let's spend as much time as we can and count them in two passes
+    let ones = txt.iter().fold(0u64, |acc, b: &u8| acc + b.count_ones() as u64);
+    let zeros = txt.iter().fold(0u64, |acc, b: &u8| acc + b.count_zeros() as u64);
+    (ones, zeros)
+}
+
+async fn get_and_analyze(n: usize) -> Result<(u64, u64), ()> {
+    let response: reqwest::Response = reqwest::get(slowwly(1000)).await.unwrap();
+    info!("Dataset {}", n);
+
+    // we get the body of the request
+    let txt = response.text().await.unwrap();
+
+    let res = analyze(&txt);
+    info!("Processed {}", n);
+    Ok(res)
 }
 
 async fn app() -> Result<(), ()> {
     info!("Starting program!");
-    let result_a = request(1);
-    let result_b = request(2);
-    let result_c = request(3);
-    let result_d = request(4);
-    let result_e = request(5);
+    let mut results = vec![];
 
-    let _result_a_unwrapped = result_a.await;
-    let _result_b_unwrapped = result_b.await;
-    let _result_c_unwrapped = result_c.await;
-    let _result_d_unwrapped = result_d.await;
-    let _result_e_unwrapped = result_e.await;
+    for i in 1..=10 {
+        let fut = get_and_analyze(i).await;
+        results.push(fut);
+    }
 
+    let mut total_ones = 0;
+    let mut total_zeros = 0;
+
+    for result in results {
+        let ones_res: Result<(u64, u64), ()> = result;
+        let (ones, zeros) = ones_res?;
+        total_ones += ones;
+        total_zeros += zeros;
+    }
+
+    info!("Ratio of ones/zeros: {:.02}",total_ones as f64 / total_zeros as f64);
     Ok(())
 }
 
