@@ -22,6 +22,7 @@ async fn request(n: usize) -> Result<(), ()> {
     info!("Got response from {}", n);
     Ok(())
 }
+
 async fn app() -> Result<(), ()> {
     info!("Starting program!");
     let a = task::spawn(request(1));
@@ -32,16 +33,11 @@ async fn app() -> Result<(), ()> {
     Ok(())
 }
 
-// #[tokio::main]
+#[tokio::main]
 fn main() {
     let start = Instant::now();
     simple_logger::init_with_level(log::Level::Debug).unwrap();
-    let mut rt = tokio::runtime::Runtime::new().unwrap();
-
-    match rt.block_on(app()) {
-        Ok(_) => info!("Done"),
-        Err(_) => error!("An error ocurred"),
-    };
+    app.await;
 
     let duration = start.elapsed();
     println!("Time elapsed in expensive_function() is: {:?}", duration);
