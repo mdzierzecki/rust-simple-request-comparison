@@ -1,0 +1,22 @@
+[package]
+name = "async_test"
+version = "0.1.0"
+authors = ["Mateusz Dzierzecki <mateusz@dzierzecki.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+futures = { version = "0.3.*"}
+tokio = {version = "0.2.*", features = ["full"] }
+log = "0.4.*"
+simple_logger = "1.9.*"
+reqwest = "0.10.*"
+
+[[bin]]
+name= "main_async"
+path = "src/main_async.rs"
+
+[[bin]]
+name= "main_std"
+path = "src/main_std.rs"
